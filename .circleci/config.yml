@@ -3,6 +3,7 @@ version: 2.1
 orbs:
   node: circleci/node@5.0.1
   docker: circleci/docker@2.1.4
+  heroku: circleci/heroku@2.0.0
 
 commands:
   install_deps:
@@ -50,6 +51,22 @@ jobs:
       - docker/push:
           image: willhooi/test-repository
           #tag: <<pipeline.git.revision>>, latest
+  deploy:
+    docker:
+      - image: cimg/node:16.10
+    steps:
+      - setup_remote_docker
+      - heroku/install
+      - checkout
+      - run:
+          name: Heroku Container push
+          command: |
+            heroku container:login
+            heroku stack:set container -a sctp-devops
+            heroku container:push web -a sctp-devops
+            heroku container:release web -a sctp-devops
+
+
 
 # Define the workflow for job execution order
 workflows:
@@ -62,4 +79,7 @@ workflows:
       - publish:
           requires:
             - test
+      - deploy:
+          requies:
+            - publish 
 
