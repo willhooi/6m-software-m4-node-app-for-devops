@@ -47,10 +47,10 @@ jobs:
       - docker/check
       - docker/build:
           image: willhooi/test-repository
-          tag: latest
+          tag: << pipeline.git.revision >>,latest
       - docker/push:
           image: willhooi/test-repository
-          tag: latest
+          tag: << pipeline.git.revision >>,latest
 
   deploy:
     docker:
@@ -66,8 +66,8 @@ jobs:
             echo "Deploying pre-built image to Heroku.."
             heroku container:login
             heroku stack:set container --app willhooi/test-repository
-            docker pull willhooi/test-repository: latest
-            docker tag willhooi/test-repository: latest registry.heroku.com/sctp-devops/web
+            docker pull willhooi/test-repository:<< pipeline.git.revision >>
+            docker tag willhooi/test-repository:<< pipeline.git.revision >> registry.heroku.com/sctp-devops/web
             docker push registry.heroku.com/sctp-devops/web
             docker container:release web --app sctp-devops
   # deploy:
