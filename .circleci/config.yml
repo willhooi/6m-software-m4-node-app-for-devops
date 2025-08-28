@@ -46,10 +46,10 @@ jobs:
       - docker/check
       - docker/build:
           image: willhooi/test-repository
-          tag: <<pipeline.git.revision>>, latest
+          #tag: <<pipeline.git.revision>>, latest
       - docker/push:
           image: willhooi/test-repository
-          tag: <<pipeline.git.revision>>, latest
+          #tag: <<pipeline.git.revision>>, latest
 
 # Define the workflow for job execution order
 workflows:
