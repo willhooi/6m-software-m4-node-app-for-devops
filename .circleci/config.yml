@@ -89,14 +89,30 @@ jobs:
 workflows:
   simple_workflow:
     jobs:
-      - build # Run build job first
+      - build: # Run build job first
+          filters:
+            only:
+              - main
+              - release
       - test: # Run test job after build
           requires:
             - build # test depends on build
+          filters:
+            branches:
+              only:
+                - main
+                - release
+            
       - publish:
           requires:
             - test
+          filters:
+            branches:
+              only: release
       - deploy:
           requires:
-            - publish 
+            - publish
+          filters:
+            branches:
+              only: release
 
