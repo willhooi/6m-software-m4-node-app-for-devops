@@ -7,13 +7,13 @@ describe("the print function", ()=>{
         jest.clearAllMocks();
     })
 
-    it("should respond with 'Hello world! This is the release version'", ()=>{
+    it("should respond with 'Hello world!! This is the release version'", ()=>{
         const mockReq = {};
         const mockRes = {
             send:jest.fn()
         }
 
         targetFn(mockReq, mockRes);
-        expect(mockRes.send).toHaveBeenCalledWith("Hello world!!"); // If you change this value, the test will fail.
+        expect(mockRes.send).toHaveBeenCalledWith("Hello world!! This is the release version"); // If you change this value, the test will fail.
     })
 })
