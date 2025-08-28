@@ -35,6 +35,20 @@ jobs:
       - run: |
           echo "Running tests..."
           npm run test
+  publish:
+    executor: docker/docker
+    steps:
+      - setup_remote_docker
+      - checkout
+      #1. verify docker is working
+      #2. authenticate docker hub using credentials
+      #3. set up docker client for operations
+      - docker/check
+      - docker/build:
+          image: willhooi/test-repository
+      - docker/push:
+          image: willhooi/test-repository
+
 # Define the workflow for job execution order
 workflows:
   simple_workflow:
@@ -43,3 +57,7 @@ workflows:
       - test: # Run test job after build
           requires:
             - build # test depends on build
+      - publish:
+          requires:
+            - test
+
