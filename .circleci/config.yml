@@ -91,9 +91,11 @@ workflows:
     jobs:
       - build: # Run build job first
           filters:
-            only:
-              - main
-              - release
+            branches:
+              only:
+                - main
+                - release
+
       - test: # Run test job after build
           requires:
             - build # test depends on build
@@ -109,6 +111,7 @@ workflows:
           filters:
             branches:
               only: release
+              
       - deploy:
           requires:
             - publish
