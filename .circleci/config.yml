@@ -47,26 +47,43 @@ jobs:
       - docker/check
       - docker/build:
           image: willhooi/test-repository
-          #tag: <<pipeline.git.revision>>, latest
+          tag: latest
       - docker/push:
           image: willhooi/test-repository
-          #tag: <<pipeline.git.revision>>, latest
-  deploy:
-    docker:
-      - image: cimg/node:16.10
-    steps:
-      - setup_remote_docker
-      - heroku/install
-      - checkout
-      - run:
-          name: Heroku Container push
-          command: |
-            heroku container:login
-            heroku stack:set container -a sctp-devops
-            heroku container:push web -a sctp-devops
-            heroku container:release web -a sctp-devops
+          tag: latest
 
-
+    deploy:
+      docker:
+        - image: cimg/node:16.10
+      steps:
+        - setup_remote_docker
+        - heroku/install
+        - checkout
+        - docker/check
+        - run:
+            name: Deploy to Heroku
+            command: |
+              echo "Deploying pre-built image to Heroku.."
+              heroku container:login
+              heroku stack:set container --app willhooi/test-repository
+              docker pull willhooi/test-repository: latest
+              docker tag willhooi/test-repository: latest registry.heroku.com/sctp-devops/web
+              docker push registry.heroku.com/sctp-devops/web
+              docker container:release web --app sctp-devops
+  # deploy:
+  #   docker:
+  #     - image: cimg/node:16.10
+  #   steps:
+  #     - setup_remote_docker
+  #     - heroku/install
+  #     - checkout
+  #     - run:
+  #         name: Heroku Container push
+  #         command: |
+  #           heroku container:login
+  #           heroku stack:set container -a sctp-devops
+  #           heroku container:push web -a sctp-devops
+  #           heroku container:release web -a sctp-devops
 
 # Define the workflow for job execution order
 workflows:
