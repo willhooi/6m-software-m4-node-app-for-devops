@@ -3,6 +3,14 @@ version: 2.1
 orbs:
   node: circleci/node@5.0.1
   docker: circleci/docker@2.1.4
+
+commands:
+  install_deps:
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+
 # Each job has 2 parts - 1. Executor, 2. Steps
 jobs:
   build:
@@ -23,9 +31,7 @@ jobs:
     docker:
       - image: cimg/node:16.10
     steps:
-      - checkout
-      - node/install-packages:
-          pkg-manager: npm
+      - install_deps
       - run: |
           echo "Running tests..."
           npm run test
