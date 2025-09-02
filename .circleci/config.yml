@@ -4,6 +4,7 @@ orbs:
   node: circleci/node@5.0.1
   docker: circleci/docker@2.1.4
   heroku: circleci/heroku@2.0.0
+  snyk: snyk/snyk@1.5.0
 
 commands:
   install_deps:
@@ -14,6 +15,20 @@ commands:
 
 # Each job has 2 parts - 1. Executor, 2. Steps
 jobs:
+  scan:
+      docker:
+        - image: cimg/node:16.10
+      environment:
+        image: willhooi/test-repository
+      steps:
+          - checkout
+          - setup_remote_docker
+          - docker/check
+          - run: docker build -t willhooi/test-repository
+          - snyk/scan:
+              docker-image-name: willhooi/test-repository
+
+
   build:
     # Means spin up a container using node:16.10 and run the steps
     docker:
@@ -47,10 +62,10 @@ jobs:
       - docker/check
       - docker/build:
           image: willhooi/test-repository
-          tag: << pipeline.git.revision >>,latest
+          tag: << pipeline.git.revision >>
       - docker/push:
           image: willhooi/test-repository
-          tag: << pipeline.git.revision >>,latest
+          tag: << pipeline.git.revision >>
 
   # deploy:
   #   docker:
@@ -104,6 +119,12 @@ workflows:
               only:
                 - main
                 - release
+      - scan:
+          requires:
+            - build
+          filters:
+            branches:
+              only: main
             
       - publish:
           requires:
@@ -118,4 +139,3 @@ workflows:
           filters:
             branches:
               only: release
-
