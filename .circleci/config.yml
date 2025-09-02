@@ -19,14 +19,14 @@ jobs:
       docker:
         - image: cimg/node:16.10
       environment:
-        image: willhooi/test-repository
+        IMAGE_NAME: willhooi/test-repository
       steps:
           - checkout
           - setup_remote_docker
           - docker/check
-          - run: docker build -t willhooi/test-repository
+          - run: docker build -t $IMAGE_NAME .
           - snyk/scan:
-              docker-image-name: willhooi/test-repository
+              docker-image-name: $IMAGE_NAME
 
 
   build:
