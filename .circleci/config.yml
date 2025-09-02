@@ -34,7 +34,7 @@ jobs:
     docker:
       - image: cimg/node:16.10
     steps:
-      - checkout
+      - checkout 
       # Using node/install-packages is better than npm install
       # because it gives you CircleCI optimization (caching, lockfile, concise)
       - node/install-packages:
