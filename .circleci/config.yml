@@ -31,6 +31,16 @@ jobs:
               # This allows the pipeline to continue even if vulnerabilities are found
               fail-on-issues: false
               severity-threshold: medium
+  codescan:
+    docker:
+      - image: cimg/node:16.10
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - snyk/install
+      - run: |
+          snyk code test
 
 
   build:
@@ -123,6 +133,9 @@ workflows:
               only:
                 - main
                 - release
+      - codescan:
+          requires:
+            - build
       - scan:
           requires:
             - build
